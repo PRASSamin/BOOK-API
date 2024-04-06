@@ -68,8 +68,7 @@ def login():
         code = request.form.get('code')
         if code in Secret_Code:
             session['logged_in'] = True
-            # ip = request.remote_addr
-            ip = '103.137.108.14' 
+            ip = request.remote_addr
             location = get_geolocation(ip)
             if location["status"] == "fail":
                 location_str = "Unknown"
