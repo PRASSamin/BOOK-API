@@ -1,0 +1,73 @@
+{% extends 'global.html' %} {% block title %} Remove {% endblock title %} {%
+block active %} active {% endblock active %} {% block content %}
+<div class="container my-5">
+  <form id="bookForm" class="row g-3 my-5">
+    <div class="col-md-12">
+      <label for="uid" class="form-label"
+        >Unique ID<span class="text-danger">*</span></label
+      >
+      <input
+        type="text"
+        class="form-control"
+        id="uid"
+        name="uid"
+        placeholder="prasX-...."
+      />
+    </div>
+
+    <div class="col-12 mt-4">
+      <button id="removebtn" type="submit" class="btn btn-dark">Remove</button>
+    </div>
+  </form>
+</div>
+
+<script>
+  uid = document.getElementById("uid")
+  removeStatusSuccess = document.getElementById("StatusSuccess")
+  removeStatusFailure = document.getElementById("StatusFailure")
+document
+    .getElementById("bookForm")
+    .addEventListener("submit", function (event) {
+      event.preventDefault();
+
+      var formData = new FormData(this);
+
+      if (uid.value == "") {
+        uid.style.border = "2px solid red";
+        removeStatusFailure.style.display = "block";
+        document.getElementById("MessageFailure").innerHTML = "Please enter a valid UID";
+        setTimeout(() => {
+          removeStatusFailure.style.display = "none";
+        }, 1000)
+        return
+      }
+      
+
+            fetch("/remove", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    removeStatusSuccess.style.display = "block";
+                    document.getElementById("MessageSuccess").innerHTML = data.message;
+                    setTimeout(() => {
+                      removeStatusSuccess.style.display = "none";
+                    }, 1000)
+                    document.getElementById("bookForm").reset();
+                } else {
+                    removeStatusFailure.style.display = "block";
+                    document.getElementById("MessageFailure").innerHTML = data.error;
+                    setTimeout( () => {
+                        removeStatusFailure.style.display = "none";
+                    }, 1000)
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+
+    </script>
+{% endblock content %}
