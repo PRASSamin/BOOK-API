@@ -13,8 +13,8 @@ Welcome to PRAS BOOK API, a powerful and versatile platform for accessing a vast
 
 To start using PRAS BOOK API, simply make HTTP requests to the provided endpoints. Here's an overview of the available endpoints:
 
-- `/api/books`: Retrieve a list of all books.
-- `/api/books?q=<book name or author or genre>` `: Search for books based on specific criteria.
+- `https://prasbook.onrender.com/api/books`: Retrieve a list of all books.
+- `https://prasbook.onrender.com/api/books?q=<book name or author or genre>` `: Search for books based on specific criteria.
 
 
 For detailed documentation on how to use each endpoint, refer to the [API Documentation](API_DOCUMENTATION.md).
@@ -38,4 +38,4 @@ This software is proprietary and is not free for commercial use. Please refer to
 
 ## Contact
 
-For inquiries or support, please contact the PRAS BOOK API development team at [contact@example.com](mailto:prassamin@gmail.com).
+For inquiries or support, please contact the PRAS BOOK API development team at [PRAS](mailto:prassamin@gmail.com).
