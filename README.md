@@ -18,7 +18,7 @@ PRAS BOOK API is seeking collaboration from individuals or organizations passion
 To start using PRAS BOOK API, simply make HTTP requests to the provided endpoints. Here's an overview of the available endpoints:
 
 - `https://prasbook.onrender.com/api/books`: Retrieve a list of all available books.
-- `https://prasbook.onrender.com/api/books?q=<book name or author or genre>`: Search for books based on specific criteria.
+- `https://prasbook.onrender.com/api/books?q=<book name or author or genre or publisher or language or ISBN>`: Search for books based on specific criteria.
 
 For detailed documentation on how to use each endpoint, refer to the [API Documentation](API_DOCUMENTATION.md).
 
