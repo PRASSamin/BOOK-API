@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redirecting</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="apple-touch-icon" sizes="180x180" href="../static/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../static/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="../static/favicon/android-chrome-192x192.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../static/favicon/favicon-16x16.png">
+    <link rel="manifest" href="../static/favicon/site.webmanifest">
+    <link rel="mask-icon" href="../static/favicon/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#2b5797">
+    <meta name="msapplication-TileImage" content="../static/favicon/mstile-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+
+    <style>
+        @import url(https://fonts.googleapis.com/css?family=Raleway:100);
+
+        body {
+            font-family: 'Raleway', cursive;
+        }
+
+        .slider {
+            position: absolute;
+            width: 400px;
+            height: 2px;
+            margin-top: 5px;
+        }
+
+        .line {
+            position: absolute;
+            width: 400px;
+            height: 2px;
+        }
+
+        .break {
+            position: absolute;
+            background: #222;
+            width: 6px;
+            height: 2px;
+        }
+
+        .dot1 {
+            -webkit-animation: loading 2s infinite;
+            animation: loading 2s infinite;
+        }
+
+        .dot2 {
+            -webkit-animation: loading 2s 0.5s infinite;
+            animation: loading 2s 0.5s infinite;
+        }
+
+        .dot3 {
+            -webkit-animation: loading 2s 1s infinite;
+            animation: loading 2s 1s infinite;
+        }
+
+        @keyframes loading {
+            from {
+                left: 0;
+            }
+
+            to {
+                left: 400px;
+            }
+        }
+
+        @-webkit-keyframes loading {
+            from {
+                left: 0;
+            }
+
+            to {
+                left: 400px;
+            }
+        }
+    </style>
+
+</head>
+
+<body class="bg-white dark:bg-gray-900 p-5 h-screen flex items-center">
+
+    <br><br><br>
+    <div class="container mx-auto py-5">
+        <h1 class="text-teal-500 font-100 text-5xl relative">Just a moment...</h1>
+        <div class="slider">
+            <div class="line bg-teal-500"></div>
+            <div class="break dot1"></div>
+            <div class="break dot2"></div>
+            <div class="break dot3"></div>
+        </div>
+    </div>
+    <script>
+        var to = "{{ to }}"
+        var subject = ""
+        var body = "From: PRAS BOOK API\nMessage: "
+
+        function redirect(sendTo) {
+            setTimeout(() => {
+                window.location.href = "mailto:" + sendTo + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body)
+            }, 1000)
+        }
+
+        window.onload = function () {
+            redirect(to)
+        }
+
+
+    </script>
+</body>
+
+</html>

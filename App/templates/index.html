@@ -1,0 +1,153 @@
+{% extends 'global.html' %} {% block title %} Home {% endblock title %} {% block
+content %}
+
+<div class="container my-5">
+  <form id="bookForm" class="row g-3 my-5">
+    <div class="col-md-6">
+      <label for="bookName" class="form-label">Book Name<span class="text-danger">*</span></label>
+      <div class="d-flex flex-row-reverse gap-2">
+        <span class="btn btn-outline-secondary" onclick="pasteButton(this)">PASTE</span>
+        <input type="text" class="form-control" id="bookName" name="bookName" placeholder="Harry Potter" />
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="d-flex">
+        <label for="bookAuthor" class="form-label">Author<span class="text-danger">*</span></label>
+        <a onclick="showInfo()"><i style="font-size: 20px; padding-left: 20px; color: gray;"
+            class="fa-solid fa-circle-info"></i></a>
+      </div>
+      <div class="d-flex flex-row-reverse gap-2">
+        <span class="btn btn-outline-secondary" onclick="pasteButton(this)">PASTE</span>
+        <input type="text" class="form-control" id="bookAuthor" name="bookAuthor" placeholder="J.K. Rowling" />
+      </div>
+    </div>
+    <div class="col-12">
+      <div class="d-flex">
+        <label for="ISBN" class="form-label">ISBN<span class="text-danger">*</span></label>
+        <a onclick="showInfo()"><i style="font-size: 20px; padding-left: 20px; color: gray;"
+            class="fa-solid fa-circle-info"></i></a>
+      </div>
+      <div class="d-flex flex-row-reverse gap-2">
+        <span class="btn btn-outline-secondary" onclick="pasteButton(this)">PASTE</span>
+        <input type="text" class="form-control" id="ISBN" name="ISBN" placeholder="978-0-7475-3269-9" />
+      </div>
+    </div>
+    <div class="col-12">
+      <label for="bookWebsite" class="form-label">Website</label>
+      <div class="d-flex flex-row-reverse gap-2">
+        <span class="btn btn-outline-secondary" onclick="pasteButton(this)">PASTE</span>
+        <input type="text" class="form-control" id="bookWebsite" name="bookWebsite" placeholder="https://" />
+      </div>
+    </div>
+    <div class="col-12">
+      <label for="bookThumbnail" class="form-label">Thumbnail</label>
+      <div class="d-flex flex-row-reverse gap-2">
+        <span class="btn btn-outline-secondary" onclick="pasteButton(this)">PASTE</span>
+        <input type="text" class="form-control" id="bookThumbnail" name="bookThumbnail" placeholder="https://" />
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="d-flex">
+        <label for="bookPublisher" class="form-label">Publisher<span class="text-danger">*</span></label>
+        <a onclick="showInfo()"><i style="font-size: 20px; padding-left: 20px; color: gray;"
+            class="fa-solid fa-circle-info"></i></a>
+      </div>
+      <div class="d-flex flex-row-reverse gap-2">
+        <span class="btn btn-outline-secondary" onclick="pasteButton(this)">PASTE</span>
+        <input type="text" class="form-control" id="bookPublisher" placeholder="Bloomsbury" name="bookPublisher" />
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="d-flex">
+        <label for="bookPublished" class="form-label">Published<span class="text-danger">*</span></label>
+        <a onclick="showInfo()"><i style="font-size: 20px; padding-left: 20px; color: gray;"
+            class="fa-solid fa-circle-info"></i></a>
+      </div>
+      <div class="d-flex flex-row-reverse gap-2">
+        <span class="btn btn-outline-secondary" onclick="pasteButton(this)">PASTE</span>
+        <input type="text" class="form-control" id="bookPublished" placeholder="1997" name="bookPublished" />
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="d-flex">
+        <label for="bookGenre" class="form-label">Genre<span class="text-danger">*</span></label>
+        <a onclick="showInfo()"><i style="font-size: 20px; padding-left: 20px; color: gray;"
+            class="fa-solid fa-circle-info"></i></a>
+      </div>
+      <div class="d-flex flex-row-reverse gap-2">
+        <span class="btn btn-outline-secondary" onclick="pasteButton(this)">PASTE</span>
+        <input type="text" class="form-control" id="bookGenre" placeholder="Fantasy" name="bookGenre" />
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="d-flex">
+        <label for="country" class="form-label">Country</label>
+        <a onclick="showInfo()"><i style="font-size: 20px; padding-left: 20px; color: gray;"
+            class="fa-solid fa-circle-info"></i></a>
+      </div>
+      <div class="d-flex flex-row-reverse gap-2">
+        <span class="btn btn-outline-secondary" onclick="pasteButton(this)">PASTE</span>
+        <input type="text" class="form-control" id="country" placeholder="USA" name="country" />
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="d-flex">
+        <label for="bookLang" class="form-label">Language<span class="text-danger">*</span></label>
+        <a onclick="showInfo()"><i style="font-size: 20px; padding-left: 20px; color: gray;"
+            class="fa-solid fa-circle-info"></i></a>
+      </div>
+      <div class="d-flex flex-row-reverse gap-2">
+        <span class="btn btn-outline-secondary" onclick="pasteButton(this)">PASTE</span>
+        <input type="text" class="form-control" id="bookLang" placeholder="English" name="bookLang" />
+      </div>
+    </div>
+    <div class="col-md-6">
+      <label for="bookPage">No of page<span class="text-danger">*</span></label>
+      <div class="d-flex flex-row-reverse gap-2">
+        <span class="btn btn-outline-secondary" onclick="pasteButton(this)">PASTE</span>
+        <input type="number" class="form-control" id="bookPage" placeholder="69" name="bookPage">
+      </div>
+    </div>
+    <div class="col-md-6">
+      <label for="ebookLink">Ebook</label>
+      <div class="d-flex flex-row-reverse gap-2">
+        <span class="btn btn-outline-secondary" onclick="pasteButton(this)">PASTE</span>
+        <input type="text" class="form-control" id="ebookLink" placeholder="Available" name="ebookLink">
+      </div>
+    </div>
+    <div class="col-md-12">
+      <div class="d-flex">
+        <label for="bookChar">Characters</label>
+        <a onclick="showInfo()"><i style="font-size: 20px; padding-left: 20px; color: gray;"
+            class="fa-solid fa-circle-info"></i></a>
+      </div>
+      <div class="d-flex flex-row-reverse gap-2">
+        <span class="btn btn-outline-secondary" onclick="pasteButton(this)">PASTE</span>
+        <input type="text" class="form-control" id="bookChar" placeholder="Draco Malfoy" name="bookChar">
+      </div>
+    </div>
+    <div class="col-md-12">
+      <label for="bookDesc" class="form-label">Description</label>
+      <div class="d-flex flex-row-reverse gap-2">
+        <span class="btn btn-outline-secondary text-center d-flex align-items-center"
+          onclick="pasteButton(this)">PASTE</span>
+        <textarea class="form-control" id="bookDesc" name="bookDesc" placeholder="Leave a description here"
+          rows="3"></textarea>
+      </div>
+    </div>
+
+    <div class="col-12 mt-4">
+      <button id="subBtn" type="submit" class="btn btn-dark">Submit</button>
+    </div>
+  </form>
+</div>
+
+<div id="infoDia" class="container mx-auto col-md-6 position-fixed justify-content-center align-items-center"
+  style="border-radius: 20px; top: 50%; left: 50%; transform: translate(-50%, -50%); display: none; background: grey; height: 20%; width: 50%;">
+  <p class="bg-transparent text-white mt-3">Use "$" to create list</p>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="/static/JS/add.js"></script>
+
+{% endblock content %}

@@ -1,9 +1,9 @@
 from datetime import datetime, timedelta
-from flask import Flask, request, render_template, json, redirect, url_for, jsonify, session
+from flask import Flask, request, render_template, json, redirect, url_for, jsonify, session, send_file
 import requests
-import modals.codeGen as uidGen
-from modals.modal import db, Library
-from modals.config import * 
+import models.codeGen as uidGen
+from models.modal import db, Library
+from models.config import * 
 from sqlalchemy import or_
 
 app = Flask(__name__)
@@ -14,17 +14,8 @@ app.secret_key = Secret_Key
 
 SESSION_TIMEOUT = 600 
 
-
 with app.app_context():
     db.create_all()
-    
-def check_session_timeout():
-    if 'last_activity' in session:
-        last_activity_time = session['last_activity']
-        current_time = datetime.now()
-        if (current_time - last_activity_time).total_seconds() > SESSION_TIMEOUT:
-            session.pop('logged_in', None)
-            session.pop('last_activity', None)
 
 @app.before_request
 def update_last_activity():
@@ -32,11 +23,10 @@ def update_last_activity():
     app.permanent_session_lifetime = timedelta(seconds=SESSION_TIMEOUT)
     session.modified = True
     session['last_activity'] = datetime.now()
-
     
 def login_required(f):
     def wrapper(*args, **kwargs):
-        check_session_timeout()
+        update_last_activity()
         if 'logged_in' in session:
             return f(*args, **kwargs)
         else:
@@ -57,37 +47,42 @@ def get_time():
     currentTime = now.strftime("%Y-%m-%d %H:%M:%S")
     return currentTime
 
+DISCORD_WEBHOOK_URL = webHookAPIUrl
 
-# Your Discord webhook URL
-DISCORD_WEBHOOK_URL = webHookUrl
-
-
-@app.route('/login', methods=['GET', 'POST'])
+@app.route('/api/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         code = request.form.get('code')
         if code in Secret_Code:
             session['logged_in'] = True
-            ip = request.remote_addr
+            
+            if request.environ.get('HTTP_X_FORWARDED_FOR') is None:
+                multip = request.environ['REMOTE_ADDR']
+
+            else:
+                multip = request.environ['HTTP_X_FORWARDED_FOR']
+
+            ipSplit = multip.split(",")
+            ip=ipSplit[0]
+            
             location = get_geolocation(ip)
-            if location["status"] == "fail":
+            if location["status"] == "fail": # type: ignore
                 location_str = "Unknown"
                 isp = "Unknown"
                 cord = "Unknown"
             else:
-                location_str = f"{location.get('city', 'Unknown')}, {location.get('regionName', 'Unknown')}, {location.get('country', 'Unknown')}"
-                isp = location.get('isp', 'Unknown')
-                cord = f"{location.get('lat', 'Unknown')}, {location.get('lon', 'Unknown')}"
+                location_str = f"{location.get('city', 'Unknown')}, {location.get('regionName', 'Unknown')}, {location.get('country', 'Unknown')}" # type: ignore
+                isp = location.get('isp', 'Unknown') # type: ignore
+                cord = f"{location.get('lat', 'Unknown')}, {location.get('lon', 'Unknown')}" # type: ignore
 
             
             
             
             
-            # Prepare rich embed content
             embed_content = {
                 "title": "Login Details",
-                "color": 5242879,  # White color
-                "thumbnail": {"url": "https://iili.io/JNsn2YF.jpg"},  # Thumbnail image (small)
+                "color": 5242879, 
+                "thumbnail": {"url": "https://iili.io/JNsn2YF.jpg"}, 
                 "fields": [
                     {"name": "IP", "value": ip, "inline": False},
                     {"name": "Location", "value": location_str, "inline": False},
@@ -98,7 +93,6 @@ def login():
             }
 
 
-            # Send message to Discord
             payload = {
                 'embeds': [embed_content]
             }
@@ -107,7 +101,7 @@ def login():
             }
             response = requests.post(DISCORD_WEBHOOK_URL, json=payload, headers=headers)
 
-            if response.status_code == 200:
+            if response.status_code == 204:
                 print('Login Successful. Redirecting...')
             else:
                 print('Failed to send login details to Discord.')
@@ -116,14 +110,16 @@ def login():
             return jsonify({'success': False, 'error': 'Invalid code. Please try again.'})
     return render_template('login.html')
 
+@app.route("/a")
+def prasShortCut():
+    return redirect(url_for("addBook"))
 
-@app.route("/", methods=["GET", "POST"])
-def index():
+@app.route("/api/pras/book/db/add", methods=["GET", "POST"])
+def addBook():
     if request.method == "POST":
         bookName = request.form.get("bookName")
         bookThumbnail = request.form.get("bookThumbnail")
         bookAuthor = request.form.get("bookAuthor")
-        sLink = request.form.get("sLink")
         bookWebsite = request.form.get("bookWebsite")
         bookPublisher = request.form.get("bookPublisher")
         bookPublished = request.form.get("bookPublished")
@@ -131,6 +127,11 @@ def index():
         country = request.form.get("country")
         bookLang = request.form.get("bookLang")
         bookDesc = request.form.get("bookDesc")
+        bookPage = request.form.get("bookPage")
+        ebook = request.form.get("ebookLink")
+        ISBN = request.form.get("ISBN")
+        bookCharacter = request.form.get("bookChar")
+
 
         if not bookName:
             bookName = None
@@ -138,8 +139,6 @@ def index():
             bookThumbnail = None
         if not bookAuthor:
             bookAuthor = None
-        if not sLink:
-            sLink = None
         if not bookWebsite:
             bookWebsite = None
         if not bookPublisher:
@@ -149,26 +148,39 @@ def index():
         if not bookGenre:
             bookGenre = None
         if not country:
-            country = None
+            country = "not available"
         if not bookLang:
             bookLang = None
         if not bookDesc:
             bookDesc = None
+        if not bookPage:
+            bookPage = None
+        if not ebook:
+            ebook = "not available"
+        if not ISBN:
+            ISBN = None
+        if not bookCharacter:
+            bookCharacter = "not available"
+
 
         add = Library(
             uid= f"prasX-{uidGen.UUIDGenerator()}",
             bookName=bookName,
             bookThumbnail=bookThumbnail,
             bookAuthor=bookAuthor,
-            sLink=sLink,
             bookWebsite=bookWebsite,
             bookPublisher=bookPublisher,
             bookPublished=bookPublished,
             bookGenre=bookGenre,
             country=country,
             bookLang=bookLang,
-            bookDesc=bookDesc
+            bookDesc=bookDesc,
+            noOfPage=bookPage,
+            eBook=ebook,
+            isbn=ISBN,
+            bookChar=bookCharacter,
         ) # type: ignore
+    
         if add:
             db.session.add(add)
             db.session.commit()
@@ -183,7 +195,90 @@ def index():
     else:
         return redirect(url_for("login"))
         
+DISCORD_WEBHOOK_URL_MAIL = webHookMAILUrl
 
+
+@app.route("/api/doc", methods=["POST", "GET"])
+@app.route("/api/docs", methods=["POST", "GET"])
+@app.route("/api/documentation", methods=["POST", "GET"])
+@app.route("/api/documentations", methods=["POST", "GET"])
+def docs():
+        if request.method == "POST":
+            email = request.form.get('email')
+            message = request.form.get('message')
+            if request.environ.get('HTTP_X_FORWARDED_FOR') is None:
+                multip = request.environ['REMOTE_ADDR']
+            else:
+                multip = request.environ['HTTP_X_FORWARDED_FOR']
+            
+            ipSplit = multip.split(",")
+            ip = ipSplit[0]
+            
+            if email is not None:
+                if "@gmail.com" in email:
+                    thumb = "https://iili.io/JkgnpCF.png"
+                elif "@outlook.com" in email or "@hotmail.com" in email:
+                    thumb = "https://iili.io/JkgAOPI.png"
+                elif any(domain in email for domain in ["@yahoo.com", "@yahoo.co.in", "@yahoo.ca", "@yahoo.com.au", "@yahoo.co.uk"]):
+                    thumb = "https://iili.io/JkgAwnp.png"
+                elif "@icloud.com" in email:
+                    thumb = "https://iili.io/JkgAhtR.png"
+                else:
+                    thumb = "https://iili.io/JkgANMN.png"
+            else:
+                thumb = "https://iili.io/JkgANMN.png"
+            
+            mailcontent = {
+                "title": "PrasMail",
+                "color": 5242879, 
+                "thumbnail": {"url": thumb}, 
+                "fields": [
+                    {"name": "From", "value": email, "inline": False},
+                    {"name": "To", "value": "prassamin@gmail.com", "inline": False},
+                    {"name": "Message", "value": message, "inline": False},
+                    {"name": "IP", "value": ip, "inline": False},
+                    {"name": "TimeStamp", "value": str(get_time()), "inline": False},
+                    {"name": "Reply", "value": f"[Let's Go📨](https://prasbook.onrender.com/email/reply?reply={email})", "inline": False}
+                ],
+            }
+            
+            payload = {"embeds": [mailcontent]}
+            headers = {'Content-Type': 'application/json'}
+            response = requests.post(DISCORD_WEBHOOK_URL_MAIL, json=payload, headers=headers)
+
+            print(response.status_code)
+            if response.status_code == 204:
+                return jsonify({"success": True, "message": "Email sent successfully!"})
+            else:
+                return jsonify({"success": False, "error": "Failed to send email."})
+    
+        return render_template("docs.html")    
+    
+@app.route("/")
+def index():
+    return redirect(url_for("base"))
+
+@app.route("/api")
+def base():
+    endPoints = {"EndPoints": {
+        'all items': 'https://prasbook.onrender.com/api/books',
+        'search': 'https://prasbook.onrender.com/api/books?q=<book name or author or genre or ISBN number or publisher or language>',
+    },
+    "WebPage": {
+        'documentation': 'https://prasbook.onrender.com/api/docs',
+    }
+    }
+    return app.response_class(
+        response=json.dumps(endPoints, sort_keys=False),
+        status=200,
+        mimetype='application/json',
+    )
+
+@app.route("/email/reply")
+def reply():
+    send = request.args.get("reply")
+
+    return render_template("reply.html", to=send)    
 
 @app.route("/api/books", methods=["GET"])
 def get_books():
@@ -209,7 +304,10 @@ def get_books():
             filter_conditions.extend([
                 Library.bookName.ilike(f"%{term}%"),
                 Library.bookAuthor.ilike(f"%{term}%"),
-                Library.bookGenre.ilike(f"%{term}%")
+                Library.bookGenre.ilike(f"%{term}%"),
+                Library.bookLang.ilike(f"%{term}%"),
+                Library.bookPublisher.ilike(f"%{term}%"),
+                Library.isbn.ilike(f"%{term}%"),
             ])
 
         query = or_(*filter_conditions)
@@ -227,6 +325,7 @@ def get_books():
         "author": "PRAS",
         "available": found_count,
         "Books": books_data,
+        
     }
 
     return app.response_class(
@@ -235,11 +334,18 @@ def get_books():
         mimetype='application/json'
     )
 
+@app.route("/api/downloadDB")
+def download():
+    dbPath = "instance/library.db"
+    return send_file(dbPath, as_attachment=True)
 
 
+@app.route("/r")
+def prasShortCut2():
+    return redirect(url_for("removeBook"))
 
-@app.route("/remove", methods=["POST", "GET"])
-def remove():
+@app.route("/api/pras/book/db/remove", methods=["POST", "GET"])
+def removeBook():
     if request.method == "POST":
         uid = request.form.get("uid")
         removeBook = Library.query.filter_by(uid=uid).first()
@@ -264,4 +370,4 @@ def not_found_error(error):
 
 
 if __name__ == "__main__":
-    app.run(debug=False)
+    app.run(debug=True, host="0.0.0.0")

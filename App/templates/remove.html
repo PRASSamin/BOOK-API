@@ -1,0 +1,21 @@
+{% extends 'global.html' %} {% block title %} Remove {% endblock title %} {%
+block active %} active {% endblock active %} {% block content %}
+<div class="container my-5">
+  <form id="bookremForm" class="row g-3 my-5">
+    <div class="col-md-12">
+      <label for="uid" class="form-label">Unique ID<span class="text-danger">*</span></label>
+      <div class="d-flex flex-row-reverse gap-2">
+        <span class="btn btn-outline-secondary" onclick="pasteButton(this)">PASTE</span>
+        <input type="text" class="form-control" id="uid" name="uid" placeholder="prasX-...." />
+      </div>
+    </div>
+
+    <div class="col-12 mt-4">
+      <button id="removebtn" type="submit" class="btn btn-dark">Remove</button>
+    </div>
+  </form>
+</div>
+
+<script src="/static/JS/remove.js"></script>
+
+{% endblock content %}
